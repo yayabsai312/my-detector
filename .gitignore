@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
+# datasets and model weights never go to GitHub
+data/*
+!data/m1_images/
+data/m1_images/*
+!data/m1_images/PUT_YOUR_PHOTOS_HERE.txt
+weights/
+runs/
+*.pt
+*.pth
+# exports are submitted in Moodle, not committed
+notebooks/*.html
+notebooks/*.pdf
