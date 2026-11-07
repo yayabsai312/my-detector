@@ -1,0 +1,7 @@
+# Describe YOUR project here (Module 2). Example: the course reference system.
+name: potholes                       # short, no spaces: the dataset goes to data/potholes_yolo
+classes: [pothole]                   # your objects, in a fixed order
+format: voc                          # voc | coco | yolo  (how YOUR dataset writes its boxes)
+source:
+  kaggle: andrewmvd/pothole-detection    # or:  folder: path/to/your/dataset
+# coco_json: annotations.json        # only for format: coco

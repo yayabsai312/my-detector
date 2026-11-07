@@ -13,3 +13,12 @@ What I asked the AI assistant, what I checked, and what I changed. A few lines p
 - Part B: ran Sobel, Laplacian, Canny at three threshold pairs and the side-by-side comparison. Canny's edge pixels fell as the thresholds rose (Object3: 28,345 / 7,196 / 617; Object1: 12,925 / 3,038 / 0).
 - The AI assistant reviewed my sentences against the figures, polished the wording of my B5, B6 and comparison text from my own notes, wrote those cells into the notebook file, ran the notebook top to bottom and exported the PDFs. I checked the results against my figures and kept my conclusions about why classical operators fail on clear plastic bottles.
 - Changed by hand: the kernel in A5, and the wording of the sentences.
+
+## Module 2
+- Added the Module 2 update to my repository (nothing from Module 1 overwritten) and pasted the Module 2 rules into CLAUDE.md. Ran `python check_setup.py`: READY.
+- Ran notebooks/02_inside_a_cnn.ipynb with the project .venv kernel (Python 3.12.7): it finished with no errors.
+- Asked Claude to read CLAUDE.md and docs/cnn_spec.md and plan src/cnn.py: the nine functions and how to check each. Reviewed the plan, asked why gradcam needs two hooks (one for the activations, one for their gradient), and approved it.
+- Claude wrote src/cnn.py. It used one hook on the layer's output and one on that output's gradient, instead of PyTorch's built-in backward hook, to avoid trouble with ResNet's in-place ReLU.
+- Checked: ran `python -m pytest -q tests/test_cnn.py` on my PC -> 10 passed in 2.51s; trace(small_cnn()) weights 216 + 1,152 + 32 = 1,400; ResNet-18 11,689,512 parameters.
+- Ran notebooks/02_my_field.ipynb on three photos of disposable water bottles (Object1-3.jpeg copied into data/my_field/). Wrote my reading of the results in the last cell: 1 of 3 correct (bucket, water bottle, broom).
+- Changed by hand: [nothing / describe].

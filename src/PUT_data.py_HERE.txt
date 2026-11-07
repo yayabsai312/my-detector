@@ -1,0 +1,1 @@
+Claude creates src/cnn.py (docs/cnn_spec.md) and src/data.py (docs/data_spec.md) here.
