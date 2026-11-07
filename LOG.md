@@ -17,8 +17,10 @@ What I asked the AI assistant, what I checked, and what I changed. A few lines p
 ## Module 2
 - Added the Module 2 update to my repository (nothing from Module 1 overwritten) and pasted the Module 2 rules into CLAUDE.md. Ran `python check_setup.py`: READY.
 - Ran notebooks/02_inside_a_cnn.ipynb with the project .venv kernel (Python 3.12.7): it finished with no errors.
-- Asked Claude to read CLAUDE.md and docs/cnn_spec.md and plan src/cnn.py: the nine functions and how to check each. Reviewed the plan, asked why gradcam needs two hooks (one for the activations, one for their gradient), and approved it.
+- Asked Claude to read CLAUDE.md and docs/cnn_spec.md and plan src/cnn.py: the nine functions and how to check each. Reviewed the plan table (the nine functions and how each one is checked) and approved it before any code was written.
 - Claude wrote src/cnn.py. It used one hook on the layer's output and one on that output's gradient, instead of PyTorch's built-in backward hook, to avoid trouble with ResNet's in-place ReLU.
 - Checked: ran `python -m pytest -q tests/test_cnn.py` on my PC -> 10 passed in 2.51s; trace(small_cnn()) weights 216 + 1,152 + 32 = 1,400; ResNet-18 11,689,512 parameters.
 - Ran notebooks/02_my_field.ipynb on three photos of disposable water bottles (Object1-3.jpeg copied into data/my_field/). Wrote my reading of the results in the last cell: 1 of 3 correct (bucket, water bottle, broom).
-- Changed by hand: [nothing / describe].
+- Looked at the printed top-3 for each photo: Object 1 -> bucket 0.18, bow 0.08, ladle 0.07 (no bottle class); Object 2 -> water bottle 0.90; Object 3 -> broom 0.21, water bottle 0.11 (second).
+- The AI assistant reviewed my written reading against the figure and the printed output and flagged what did not match (a copied answer for Object 2, angle not explaining Object 1 vs 2, claims with no evidence, no overall conclusion). I answered its questions from my own observations and rewrote the text; the conclusions are mine. The assistant only fixed the Markdown formatting.
+- Changed by hand: nothing in src/cnn.py (used the generated file as is); I wrote and revised my reading in the last cell of 02_my_field.ipynb myself.
