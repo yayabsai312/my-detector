@@ -1,7 +1,7 @@
-# Describe YOUR project here (Module 2). Example: the course reference system.
-name: potholes                       # short, no spaces: the dataset goes to data/potholes_yolo
-classes: [pothole]                   # your objects, in a fixed order
-format: voc                          # voc | coco | yolo  (how YOUR dataset writes its boxes)
+# My project (Module 2). Stand-in dataset: 1 class "bottle" (plastic bottles in the wild).
+# Later (Module 3/4) I add my own gym water-station photos with two classes: reusable, disposable.
+name: bottles                        # short, no spaces: the dataset goes to data/bottles_yolo
+classes: [bottle]                    # written exactly as in the dataset's data.yaml (names: ['bottle'])
+format: yolo                         # voc | coco | yolo  (the dataset is already in YOLO format)
 source:
-  kaggle: andrewmvd/pothole-detection    # or:  folder: path/to/your/dataset
-# coco_json: annotations.json        # only for format: coco
+  kaggle: siddharthkumarsah/plastic-bottles-image-dataset   # CC BY 4.0, 1.71 GB

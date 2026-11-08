@@ -3,7 +3,8 @@
 ## Goal
 Over four weeks this repository becomes my own object-detection system: classical computer vision (Module 1),
 my dataset (Module 2), a trained detector (Module 3) and an app that someone else can run (Module 4).
-The object I plan to detect: disposable water bottles
+The object I plan to detect: reusable and disposable water bottles.
+Project sentence: My system detects reusable and disposable water bottles in photos of gym water-station areas, so that a facility manager can decide whether to install a water vending machine or refill stations.
 
 ## How we work
 - Before writing code, propose a short plan (files, steps, how we will verify it) and wait for my approval.
