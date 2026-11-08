@@ -58,6 +58,15 @@ def build_app(project_path="project.yaml"):
             gr.Dataframe([[k, v, ", ".join(rv["examples"][k][:3])] for k, v in rv["counts"].items()],
                          headers=["check", "count", "first examples"], interactive=False)
 
+            gr.Markdown("### Duplicate images across splits")
+            pairs = dt.find_duplicate_pairs(root)
+            if pairs:
+                gr.Markdown(f"{len(pairs)} pairs of identical images sit in different splits.")
+                gr.Dataframe([[p["split_a"], p["file_a"], p["split_b"], p["file_b"]] for p in pairs],
+                             headers=["split", "file", "split (copy)", "file (copy)"], interactive=False)
+            else:
+                gr.Markdown("No duplicates found.")
+
             gr.Markdown("### Image browser")
             biggest = max([len(dt._images(root, s)) for s in dt.SPLITS] + [1])
             with gr.Row():

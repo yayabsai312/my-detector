@@ -296,6 +296,26 @@ def review(root, n_classes):
     return {"counts": counts, "examples": examples}
 
 
+def find_duplicate_pairs(root):
+    """Identical images (same file bytes) that sit in different splits, as a list of pairs.
+
+    Each pair is {"split_a", "file_a", "split_b", "file_b"}. Copies inside one split are not reported.
+    A group of three copies gives every cross-split pair. The list is sorted so results are predictable.
+    """
+    groups = {}
+    for split in SPLITS:
+        for path in _images(root, split):
+            groups.setdefault(hashlib.md5(path.read_bytes()).hexdigest(), []).append((split, path.name))
+    pairs = []
+    for members in groups.values():
+        members.sort(key=lambda m: (SPLITS.index(m[0]), m[1]))
+        for i, (split_a, file_a) in enumerate(members):
+            for split_b, file_b in members[i + 1:]:
+                if split_a != split_b:
+                    pairs.append({"split_a": split_a, "file_a": file_a, "split_b": split_b, "file_b": file_b})
+    return sorted(pairs, key=lambda p: (SPLITS.index(p["split_a"]), p["file_a"], SPLITS.index(p["split_b"]), p["file_b"]))
+
+
 # --------------------------------------------------------------------------- looking at images
 def _read_bgr(path):
     data = np.fromfile(str(path), dtype=np.uint8)            # works with any characters in the path
