@@ -16,6 +16,7 @@ I expect the `all` run to achieve a higher mAP50 than a run trained on `half`, b
 Fill this in **after** training.
 
 ## What actually happened
-Epochs, minutes and best mAP50:
+Epochs, minutes and best mAP50: 30 epochs, 132.9 minutes, best mAP50 0.486 (epoch 24, validation split; last epoch 0.475).
 
 ## Was my prediction right? What did I learn?
+My prediction that `all` would beat `half` by a modest amount cannot be checked because I trained only `all`; I would need to train `half` with the same settings and compare the results. I learned that the 2-epoch trial’s mAP50 of 0.392 was only an early reference: the 30-epoch run reached a best mAP50 of 0.486, and took 132.9 minutes, close to my estimate of about 2 hours 20 minutes. Training loss kept falling from 1.77 to 1.22 while validation loss flattened near 1.9 after epoch 15; mAP50 fluctuated by up to about 0.02 from epochs 20–30, and the overfitting flag stayed false. The best checkpoint came from epoch 24, so I will use `best.pt` rather than treating epoch 30 as best. This is still only a one-class Kaggle baseline with no gym photos, so I have not tested reusable versus disposable bottles or performance in the gym.
