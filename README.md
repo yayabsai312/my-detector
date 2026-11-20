@@ -47,12 +47,12 @@ The trained model is **not** in the repository (weights and `runs/` are never co
 1. Start the app: `python app/app.py` and open http://127.0.0.1:7860.
 2. Open the tab "2 · Training", keep training data `all`, epochs `30`, image size `416`, write your reason and press "Start training".
 
-On my computer (CPU only) this took 132.9 minutes (about 2 hours 13 minutes). For a quick try, use 2 epochs: about 9 minutes, but the model is much weaker (mAP50 0.39 on validation). The run is saved in `runs/<name>/weights/best.pt`.
+On my computer (CPU only) this took 132.9 minutes (about 2 hours 13 minutes). For a quick try, use 2 epochs: about 9 minutes, but the model is much weaker (mAP50 0.39 on validation). The run is saved in `runs/<name>/weights/best.pt`. **Then stop the app (Ctrl+C in its terminal) and start it again with `python app/app.py`:** page 3 only looks for finished runs when the app starts, so a run trained while the app was open does not appear until you restart it.
 
 ## Detect
 Start the app with `python app/app.py` and open http://127.0.0.1:7860. On the tab "3 · Detection & results":
 
-1. Choose a finished run (the one with the best mAP50 is preselected).
+1. Choose a finished run (the one with the best mAP50 is preselected). If the page says "No finished run yet" after you trained one, restart the app (see Train).
 2. Upload a photo, or pick one of the 40 test-split photos.
 3. Press "Detect", then move the Confidence slider: boxes below the slider value disappear and the count updates. It starts at the threshold in `project.yaml` (0.25).
 
