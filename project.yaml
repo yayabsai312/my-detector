@@ -5,3 +5,5 @@ classes: [bottle]                    # written exactly as in the dataset's data.
 format: yolo                         # voc | coco | yolo  (the dataset is already in YOLO format)
 source:
   kaggle: siddharthkumarsah/plastic-bottles-image-dataset   # CC BY 4.0, 1.71 GB
+
+threshold: 0.25                      # chosen in Assignment 3.2

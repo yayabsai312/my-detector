@@ -2,8 +2,9 @@
 
 Tab "1 · Data": class balance, split statistics, quality checks, an image browser and the 20-image grid.
 Tab "2 · Training" (Module 3): choose the data, say why, start a training and watch it.
-Module 4 adds more tabs to this file.
+Tab "3 · Detection & results" (Module 4): choose a finished run, detect on a photo, move the confidence.
 """
+import random
 import re
 import sys
 from pathlib import Path
@@ -12,10 +13,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import cv2
 import gradio as gr
 from matplotlib.figure import Figure
 
 from src import data as dt
+from src import detect as dc
 from src import train as tr
 
 
@@ -136,15 +139,97 @@ def _training_tab(root, classes, base):
     timer.tick(refresh, [run_name, epochs], [status, table, plot])
 
 
+def _status_text(status):
+    """The system status line: one entry per phase, and what to do when one is missing."""
+    todo = {"data": "run `notebooks/02_my_dataset.ipynb`",
+            "training": "train a run on the page 2 · Training",
+            "results": "run `notebooks/03_my_results.ipynb`"}
+    names = {"data": "1 Data", "training": "2 Training", "results": "3 Results"}
+    parts = [f"{'🟢' if status[k] else '🔴'} **{names[k]}**" + ("" if status[k] else f" — {todo[k]}") for k in status]
+    return "System status: " + " · ".join(parts)
+
+
+def _detection_tab(project, root, base, classes):
+    """The widgets of the tab '3 · Detection & results'. Call it inside a gr.Tab."""
+    runs = dc.list_runs(base / "runs")
+    if not runs:
+        gr.Markdown("**No finished run yet.** Train one on the page *2 · Training* (a run is finished when "
+                    "`runs/<name>/weights/best.pt` exists), then reload this page.")
+    else:
+        by_name = {r["name"]: r for r in runs}
+        test_dir = root / "images" / "test"
+        test_files = sorted(p.name for p in test_dir.glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png"}) \
+            if test_dir.exists() else []
+        test_files = sorted(random.Random(42).sample(test_files, min(40, len(test_files))))   # fixed sample of 40
+
+        def run_info(name):
+            r = by_name[name]
+            m = "no results.csv" if r["mAP50"] is None else f"{r['mAP50']:.3f}"
+            return f"**mAP50 (validation):** {m}\n\n**Why it was trained:** {r['why'] or '(no reason written)'}"
+
+        best_run = max(runs, key=lambda r: r["mAP50"] if r["mAP50"] is not None else -1)["name"]
+        run = gr.Dropdown([r["name"] for r in runs], value=best_run, label="Finished run")
+        info = gr.Markdown(run_info(best_run))
+        run.change(run_info, run, info)
+
+        with gr.Row():
+            upload = gr.Image(label="Upload a photo", type="numpy", sources=["upload"])
+            test_choice = gr.Dropdown(test_files, value=None, label="...or choose a photo of the test split (40 of them)")
+        detect_button = gr.Button("Detect", variant="primary")
+        conf = gr.Slider(0.0, 1.0, value=dc.default_conf(project), step=0.01, label="Confidence")
+        sentence = gr.Markdown()
+        with gr.Row():
+            shown = gr.Image(label="Detections", type="numpy")
+            table = gr.Dataframe(headers=["class", "count"], label="Count by class", interactive=False)
+        all_preds = gr.State([])
+        photo = gr.State(None)
+
+        def show(preds, rgb, c):
+            kept = dc.keep(preds, c)
+            counts = dc.count_by_label(kept, classes)
+            return dc.draw(rgb, kept), dc.describe(kept, c, classes), [[k, v] for k, v in counts.items()]
+
+        def detect(name, uploaded, test_name, c):
+            if uploaded is not None:
+                rgb = uploaded
+            elif test_name:
+                bgr = cv2.imread(str(root / "images" / "test" / test_name))
+                if bgr is None:
+                    raise gr.Error(f"Could not read {test_name}.")
+                rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+            else:
+                raise gr.Error("Upload a photo or choose one from the test split first.")
+            preds = dc.predict(by_name[name]["weights"], rgb)         # the model runs once here
+            return (preds, rgb) + show(preds, rgb, c)
+
+        def move(preds, rgb, c):                                      # the slider: no model call
+            if rgb is None:
+                return None, "Press Detect first.", []
+            return show(preds, rgb, c)
+
+        detect_button.click(detect, [run, upload, test_choice, conf],
+                            [all_preds, photo, shown, sentence, table])
+        conf.change(move, [all_preds, photo, conf], [shown, sentence, table])
+
+    gr.Markdown("## Results of Module 3")
+    for name in ("thresholds.png", "examples.png"):
+        if (base / "results" / name).exists():
+            gr.Image(str(base / "results" / name), label=name, interactive=False)
+    if (base / "docs" / "experiment.md").exists():
+        gr.Markdown((base / "docs" / "experiment.md").read_text(encoding="utf-8"))
+
+
 def build_app(project_path="project.yaml"):
     """Return the Gradio Blocks of the data page."""
     project_path = Path(project_path)
     project = dt.load_project(project_path)
     classes = project["classes"]
-    root = project_path.resolve().parent / "data" / f"{project['name']}_yolo"
+    base = project_path.resolve().parent
+    root = base / "data" / f"{project['name']}_yolo"
 
     with gr.Blocks(title=project["name"]) as demo:
         gr.Markdown(f"# {project['name']}")
+        gr.Markdown(_status_text(dc.system_check(project, base / "runs", base / "results")))
         with gr.Tab("1 · Data"):
             if not root.exists():
                 gr.Markdown("**No dataset yet.** Run `notebooks/02_my_dataset.ipynb` first, then reload this page.")
@@ -210,7 +295,10 @@ def build_app(project_path="project.yaml"):
             if not root.exists():
                 gr.Markdown("**No dataset yet.** Run `notebooks/02_my_dataset.ipynb` first, then reload this page.")
             else:
-                _training_tab(root, classes, project_path.resolve().parent)
+                _training_tab(root, classes, base)
+
+        with gr.Tab("3 · Detection & results"):
+            _detection_tab(project, root, base, classes)
     return demo
 
 
