@@ -60,7 +60,7 @@ What I asked the AI assistant, what I checked, and what I changed. A few lines p
 - My threshold choice (0.25) and my interpretation are in A3_2_Sow_Yaya_MAI630.pdf.
 
 ### Still to do
-- Commit and push assignment 3.2; check that the repository opens when I am signed out.
+- Check that the repository opens when I am signed out (assignment 3.2 itself is committed and pushed).
 
 ## Module 4
 - Added the Module 4 update to my repository: `docs/detect_spec.md`, `docs/readme_spec.md`, `docs/CLAUDE_module4.md`, `tests/test_detect.py`, `tests/test_system.py`, `tests/test_readme.py`, `.claude/settings.json` and `.claude/hooks/pre_commit_check.py`. Pasted the Module 4 rules into CLAUDE.md. Added `threshold: 0.25` (chosen in Assignment 3.2) to `project.yaml`.
@@ -78,7 +78,14 @@ What I asked the AI assistant, what I checked, and what I changed. A few lines p
   - Compared with Module 3, I now see that a working detection page is not a reliable model. Dataset quality, honest testing, documentation and being able to run the project on another computer matter as much as the code.
 
 ### Test from nothing (Section E)
-- TODO after the fresh clone: what the README did not say, and what I added.
+- Cloned the repository into a new folder on my Windows PC (`Desktop\test-from-nothing`) and followed the README. What the README did not say, or said wrongly, and what I added:
+  - No Windows Python command: `python3.12 -m venv .venv` is not recognized in PowerShell. I added a Windows block (`py -3.12 -m venv .venv`, `.venv\Scripts\Activate.ps1`) and a separate Mac / Linux block.
+  - The old line `source .venv/bin/activate  # Windows ...` failed when copied into PowerShell. Fixed by the two blocks.
+  - Because the venv step failed, my first `pip install` went into my global Python (the prompt had no `(.venv)`). I deleted the folder, cloned again, checked that the prompt showed `(.venv)` and installed again; I left the global packages in place.
+  - After training `run1` (2 epochs, 9.4 minutes, best mAP50 0.392, the same as my earlier 2-epoch trial), page 3 still said "No finished run yet" until I stopped and restarted the app, because page 3 looks for runs only when the app starts. I added a restart step to the Train and Detect sections of the README. The message on the page still says "reload"; I report this as a known problem and did not change the code.
+  - `python check_setup.py` ends with `ENVIRONMENT OK — now add your photos`, not `READY`, because `data/m1_images/` is empty on a fresh clone. The README now says so.
+  - The dataset step (`jupyter nbconvert ... 02_my_dataset.ipynb`) took about a minute, because the Kaggle download was already in my cache; it was not a true first download (1.7 GB).
+- Result: install, `check_setup.py`, data conversion, training and detection with the slider all worked in the fresh clone. README commits: `2d22e40` (Windows commands) and `ad0637d` (restart step).
 
 ### Classmate (Section E)
 - TODO: where my classmate got stuck, and what I fixed.
