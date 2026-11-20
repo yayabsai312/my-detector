@@ -6,11 +6,25 @@ My system detects reusable and disposable water bottles in photos of gym water-s
 ## Install
 You need Python 3.12 and git. The packages are listed in `requirements.txt` (pinned for CPU only, no GPU needed).
 
+Windows (PowerShell):
+
+```powershell
+git clone https://github.com/yayabsai312/my-detector.git
+cd my-detector
+py -3.12 -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m ipykernel install --sys-prefix --name mai630 --display-name "Python (mai630)"
+python check_setup.py
+```
+
+Mac / Linux:
+
 ```bash
 git clone https://github.com/yayabsai312/my-detector.git
 cd my-detector
 python3.12 -m venv .venv
-source .venv/bin/activate          # Windows (PowerShell): .venv\Scripts\Activate.ps1
+source .venv/bin/activate
 pip install -r requirements.txt
 python -m ipykernel install --sys-prefix --name mai630 --display-name "Python (mai630)"
 python check_setup.py

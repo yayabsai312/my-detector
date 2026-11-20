@@ -61,3 +61,24 @@ What I asked the AI assistant, what I checked, and what I changed. A few lines p
 
 ### Still to do
 - Commit and push assignment 3.2; check that the repository opens when I am signed out.
+
+## Module 4
+- Added the Module 4 update to my repository: `docs/detect_spec.md`, `docs/readme_spec.md`, `docs/CLAUDE_module4.md`, `tests/test_detect.py`, `tests/test_system.py`, `tests/test_readme.py`, `.claude/settings.json` and `.claude/hooks/pre_commit_check.py`. Pasted the Module 4 rules into CLAUDE.md. Added `threshold: 0.25` (chosen in Assignment 3.2) to `project.yaml`.
+- Asked Claude to write `src/detect.py` and the page "3 · Detection & results" in `app/app.py`. The page opens the finished run with the best mAP50 (`all30`), takes an uploaded photo or one of 40 test-split photos, and has a Confidence slider that starts at the threshold in `project.yaml`. Tested it in the browser on a test-split photo and on my own photo of a Member's Mark bottle (detected, confidence 0.85, 1 bottle at 0.25).
+- Things that did not work and what I did:
+  - Claude could not install packages in its own shell, so it could not run the tests there. I ran `python -m pytest -q tests` myself on my PC.
+  - The first run of the page wrote the labels too small on my large phone photo. I asked for a fix and the label size now scales with the photo size.
+  - Claude first defaulted the page to the last run (`test2`, the 2-epoch trial) instead of the best one. Fixed so the best mAP50 run (`all30`) is preselected.
+- Hook test: staged `runs/all30/weights/best.pt` with `git add -f` and asked Claude Code to run `git commit -m 'Add my trained model'`. It was blocked by `.claude/hooks/pre_commit_check.py` ("Commit blocked ... runs/all30/weights/best.pt"), nothing was committed, and Claude Code did not try to get around the hook. Then I unstaged the file with `git restore --staged`.
+- README: wrote it following `docs/readme_spec.md` (7 sections). I wrote "Why I chose 0.25" and "What doesn't work" myself from my Assignment 3.2 notes; `python -m pytest -q tests/test_readme.py`: 3 passed. Full suite: 77 passed.
+- Observations of my own:
+  - Instructions versus a hook: when I asked Claude Code to commit `best.pt`, `.claude/hooks/pre_commit_check.py` blocked it because model weights are not allowed in the repository. A rule in `CLAUDE.md` tells Claude what it should do; the hook checks the staged files and blocks the action when the rule is broken. Claude Code did not try to get around the block and offered to unstage the file and check `.gitignore`. The hook is a Claude Code hook (registered in `.claude/settings.json`), so it protects commits Claude runs, not commits I type myself. A project needs both clear instructions and an automatic check.
+  - One good detection is not a reliable model: my Member's Mark bottle was detected at 0.85, but the test split gives mAP50 0.454, precision 0.58 and recall 0.51 at 0.25. The labels on my large phone photo were too small, so I asked for a fix and the text size now scales with the photo. Before I say the model works, I would test more real photos: other bottle types, angles, lighting and several bottles in one photo.
+  - Checking AI output: in Module 3 Claude estimated about 7 hours of training (real: 2 hours 20 minutes) and gave detection counts I had to recount. In Module 4 it could not run the tests in my environment, so I ran them myself (77 passed). The guide is written for a Mac (zsh); I work in Windows PowerShell, and in Module 3 `jupyter nbconvert` failed with a launcher error because my `.venv` points to an old OneDrive folder. I will check the README commands again in the test from nothing.
+  - Compared with Module 3, I now see that a working detection page is not a reliable model. Dataset quality, honest testing, documentation and being able to run the project on another computer matter as much as the code.
+
+### Test from nothing (Section E)
+- TODO after the fresh clone: what the README did not say, and what I added.
+
+### Classmate (Section E)
+- TODO: where my classmate got stuck, and what I fixed.
